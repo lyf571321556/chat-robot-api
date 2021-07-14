@@ -1,3 +1,3 @@
-module github.com/lyf571321556/qiye_wechat-bot-api
+module github.com/lyf571321556/qiye-wechat-bot-api
 
 go 1.16
