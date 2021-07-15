@@ -17,7 +17,7 @@ type ContentData struct {
 	// `userid` 列表, 提醒群中的指定成员 (@某个成员), `@all` 表示提醒所有人,
 	//
 	// 如果获取不到 `userid`, 可以使用 `mentioned_mobile_list`
-	MentionedList []string `json:"touser,omitempty"`
+	MentionedList []string `json:"mentioned_list,omitempty"`
 
 	// **选填**
 	//

@@ -40,7 +40,6 @@ type QiyeWechatBot interface {
 
 func NewRequest(method string, rawUrl string, rawBody []byte) (request *http.Request, err error) {
 	debugLog(fmt.Sprintf("--> %s %s\n%s", method, rawUrl, rawBody))
-
 	if request, err = http.NewRequest(method, rawUrl, bytes.NewBuffer(rawBody)); err != nil {
 		return nil, err
 	}
@@ -94,7 +93,7 @@ func ExecuteHTTP(req *http.Request) (rawResp []byte, err error) {
 	}()
 
 	rawResp, err = ioutil.ReadAll(resp.Body)
-	debugLog(fmt.Sprintf("<-- %s %s %d %s\n%s\n", req.Method, req.URL.String(), resp.StatusCode, time.Since(start), rawResp))
+	debugLog(fmt.Sprintf("<-- %s %s %d %s\n\n", req.Method, req.URL.String(), resp.StatusCode, time.Since(start)))
 	if err != nil {
 		return nil, err
 	}

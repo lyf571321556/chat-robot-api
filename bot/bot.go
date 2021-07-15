@@ -9,6 +9,7 @@ import (
 	"github.com/lyf571321556/qiye-wechat-bot-api/markdown"
 	"github.com/lyf571321556/qiye-wechat-bot-api/news"
 	"github.com/lyf571321556/qiye-wechat-bot-api/text"
+	"log"
 	"net/http"
 )
 
@@ -19,7 +20,7 @@ type QiyeWechatBot struct {
 
 func NewQiyeWechatBot(key string) *QiyeWechatBot {
 	bot := new(QiyeWechatBot)
-	bot.webhook = fmt.Sprintf(api.BotSendUrl, key)
+	bot.webhook = fmt.Sprintf(api.GroupBotSendUrl, key)
 
 	bot.key = key
 	return bot
@@ -64,7 +65,7 @@ func (b *QiyeWechatBot) pushMsg(msg interface{}) (err error) {
 		return err
 	}
 	if rawResp != nil {
-		print(string(rawResp))
+		log.Printf("result:%s", string(rawResp))
 	}
 	//var reply = new(struct {
 	//	ErrCode   int    `json:"errcode"`

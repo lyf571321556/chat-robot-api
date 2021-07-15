@@ -2,25 +2,41 @@ package test
 
 import (
 	"github.com/lyf571321556/qiye-wechat-bot-api/api"
+	"github.com/lyf571321556/qiye-wechat-bot-api/markdown"
 	"github.com/lyf571321556/qiye-wechat-bot-api/text"
 	"testing"
 )
 import "github.com/lyf571321556/qiye-wechat-bot-api/bot"
 
-var botKey = "3889d32e-5511-423c-a18b-12feeab07bab"
+var botKey = "8c8c33c5-2ce2-4fae-b610-be137741a06d"
 var phoneNumber = ""
-var userid = "WuXingJuan||ChuYang"
+var userid = "WuXingJuan"
 var wechatbot api.QiyeWechatBot
 
 func setup() {
 	wechatbot = bot.NewQiyeWechatBot(botKey)
+	api.SetDebug(true)
 }
 
 func Test_PushTextMessage(t *testing.T) {
 	setup()
 
 	err := wechatbot.PushTextMessage(
-		"test", text.MentionByUserid(userid),
+		"test", text.MentionByUserid(userid), text.MentionByUserid("ChuYang"),
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func Test_PushMarkdownMessage(t *testing.T) {
+	setup()
+
+	err := wechatbot.PushMarkdownMessage(
+		markdown.Heading(1, "警告⚠️") + "工时登记提醒," + markdown.WarningText("") + "，请相关同事注意。\n" +
+			markdown.QuoteText("@ChuYang :"+markdown.CommentText("test001")) +
+			markdown.QuoteText("@WuXingJuan :"+markdown.CommentText("test002")) +
+			markdown.QuoteText("@all :"+markdown.CommentText("test003")),
 	)
 	if err != nil {
 		t.Fatal(err)
