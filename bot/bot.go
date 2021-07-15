@@ -51,6 +51,21 @@ func (b *QiyeWechatBot) PushFileMessage(media file.Media) error {
 	return b.pushMsg(msg)
 }
 
+func handleResp(rawResp []byte) (err error) {
+	var reply = new(struct {
+		ErrCode int    `json:"errcode"`
+		ErrMsg  string `json:"errmsg"`
+	})
+
+	if err = json.Unmarshal(rawResp, reply); err != nil {
+		return fmt.Errorf("unknown response: %w\nraw response: %s", err, rawResp)
+	}
+	if reply.ErrMsg != "ok" {
+		return fmt.Errorf("unknown response: %s", rawResp)
+	}
+	return nil
+}
+
 func (b *QiyeWechatBot) pushMsg(msg interface{}) (err error) {
 	var bsJSON []byte
 	if bsJSON, err = json.Marshal(msg); err != nil {
@@ -60,7 +75,8 @@ func (b *QiyeWechatBot) pushMsg(msg interface{}) (err error) {
 	if req, err = api.NewRequest(http.MethodPost, b.webhook, bsJSON); err != nil {
 		return err
 	}
-	rawResp, err := api.ExecuteHTTP(req)
+
+	rawResp, err := api.ExecuteHTTP(req, handleResp)
 	if err != nil {
 		return err
 	}
@@ -86,7 +102,7 @@ func (b *QiyeWechatBot) UploadFile(filename string) (media file.Media, err error
 		return file.Media{}, err
 	}
 	var rawResp []byte = nil
-	if rawResp, err = api.ExecuteHTTP(req); err != nil {
+	if rawResp, err = api.ExecuteHTTP(req, handleResp); err != nil {
 		return file.Media{}, err
 	}
 

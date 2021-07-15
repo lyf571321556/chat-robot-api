@@ -2,7 +2,6 @@ package api
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"github.com/lyf571321556/qiye-wechat-bot-api/file"
 	"github.com/lyf571321556/qiye-wechat-bot-api/news"
@@ -81,7 +80,9 @@ func NewUploadRequest(method string, rawUrl string, filename string) (request *h
 	return
 }
 
-func ExecuteHTTP(req *http.Request) (rawResp []byte, err error) {
+type HandRespFunc func(rawResp []byte) error
+
+func ExecuteHTTP(req *http.Request, respFunc HandRespFunc) (rawResp []byte, err error) {
 	start := time.Now()
 	var resp *http.Response
 	if resp, err = HTTPClient.Do(req); err != nil {
@@ -98,17 +99,9 @@ func ExecuteHTTP(req *http.Request) (rawResp []byte, err error) {
 		return nil, err
 	}
 
-	var reply = new(struct {
-		ErrCode int    `json:"errcode"`
-		ErrMsg  string `json:"errmsg"`
-	})
-	if err = json.Unmarshal(rawResp, reply); err != nil {
-		return nil, fmt.Errorf("unknown response: %w\nraw response: %s", err, rawResp)
+	if err = respFunc(rawResp); err != nil {
+		return nil, fmt.Errorf("error: %w\n", err)
 	}
-	if reply.ErrMsg != "ok" {
-		return nil, fmt.Errorf("unknown response: %s", rawResp)
-	}
-
 	return
 }
 
