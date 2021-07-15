@@ -9,6 +9,7 @@ import (
 	"github.com/lyf571321556/qiye-wechat-bot-api/markdown"
 	"github.com/lyf571321556/qiye-wechat-bot-api/news"
 	"github.com/lyf571321556/qiye-wechat-bot-api/text"
+	"io/ioutil"
 	"log"
 	"net/http"
 )
@@ -51,11 +52,16 @@ func (b *QiyeWechatBot) PushFileMessage(media file.Media) error {
 	return b.pushMsg(msg)
 }
 
-func handleResp(rawResp []byte) (err error) {
+func handleResp(resp *http.Response) (err error) {
 	var reply = new(struct {
 		ErrCode int    `json:"errcode"`
 		ErrMsg  string `json:"errmsg"`
 	})
+
+	rawResp, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
 
 	if err = json.Unmarshal(rawResp, reply); err != nil {
 		return fmt.Errorf("unknown response: %w\nraw response: %s", err, rawResp)

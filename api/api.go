@@ -38,7 +38,7 @@ type QiyeWechatBot interface {
 }
 
 func NewRequest(method string, rawUrl string, rawBody []byte) (request *http.Request, err error) {
-	debugLog(fmt.Sprintf("--> %s %s\n%s", method, rawUrl, rawBody))
+	debugLog(fmt.Sprintf("start request --> %s %s<<<%s>>>", method, rawUrl, rawBody))
 	if request, err = http.NewRequest(method, rawUrl, bytes.NewBuffer(rawBody)); err != nil {
 		return nil, err
 	}
@@ -80,26 +80,21 @@ func NewUploadRequest(method string, rawUrl string, filename string) (request *h
 	return
 }
 
-type HandRespFunc func(rawResp []byte) error
+type HandRespFunc func(resp *http.Response) error
 
-func ExecuteHTTP(req *http.Request, respFunc HandRespFunc) (rawResp []byte, err error) {
-	start := time.Now()
+func ExecuteHTTP(req *http.Request, handRespFunc HandRespFunc) (rawResp []byte, err error) {
 	var resp *http.Response
 	if resp, err = HTTPClient.Do(req); err != nil {
 		return nil, err
 	}
+	end := time.Now()
+	log.Println(fmt.Sprintf("<-- %s %s %d %s", req.Method, req.URL.String(), resp.StatusCode, time.Since(end)))
+
 	defer func() {
 		_, _ = io.Copy(ioutil.Discard, resp.Body)
 		_ = resp.Body.Close()
 	}()
-
-	rawResp, err = ioutil.ReadAll(resp.Body)
-	debugLog(fmt.Sprintf("<-- %s %s %d %s\n\n", req.Method, req.URL.String(), resp.StatusCode, time.Since(start)))
-	if err != nil {
-		return nil, err
-	}
-
-	if err = respFunc(rawResp); err != nil {
+	if err = handRespFunc(resp); err != nil {
 		return nil, fmt.Errorf("error: %w\n", err)
 	}
 	return
