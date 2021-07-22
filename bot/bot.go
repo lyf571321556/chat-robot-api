@@ -26,13 +26,14 @@ var (
 
 type QiyeWechatBot struct {
 	webhook string
+	name    string
 	key     string
 }
 
-func NewQiyeWechatBot(key string) *QiyeWechatBot {
+func NewQiyeWechatBot(name string, key string) *QiyeWechatBot {
 	bot := new(QiyeWechatBot)
 	bot.webhook = fmt.Sprintf(GroupBotSendUrl, key)
-
+	bot.name = name
 	bot.key = key
 	return bot
 }
