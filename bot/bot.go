@@ -14,6 +14,16 @@ import (
 	"net/http"
 )
 
+var (
+	// GroupBotSendUrl 企业微信群机器人 webhook
+	GroupBotSendUrl = "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=%s"
+
+	AppBotSendUrl = "https://qyapi.weixin.qq.com/cgi-bin/message/send"
+
+	// UploadMediaUrl 企业微信上传文件接口 `url`, `type` 固定传 `file`
+	UploadMediaUrl = "https://qyapi.weixin.qq.com/cgi-bin/webhook/upload_media?key=%s&type=file"
+)
+
 type QiyeWechatBot struct {
 	webhook string
 	key     string
@@ -21,7 +31,7 @@ type QiyeWechatBot struct {
 
 func NewQiyeWechatBot(key string) *QiyeWechatBot {
 	bot := new(QiyeWechatBot)
-	bot.webhook = fmt.Sprintf(api.GroupBotSendUrl, key)
+	bot.webhook = fmt.Sprintf(GroupBotSendUrl, key)
 
 	bot.key = key
 	return bot
@@ -104,7 +114,7 @@ func (b *QiyeWechatBot) pushMsg(msg interface{}) (err error) {
 
 func (b *QiyeWechatBot) UploadFile(filename string) (media file.Media, err error) {
 	var req *http.Request
-	if req, err = api.NewUploadRequest(http.MethodPost, fmt.Sprintf(api.UploadMediaUrl, b.key), filename); err != nil {
+	if req, err = api.NewUploadRequest(http.MethodPost, fmt.Sprintf(UploadMediaUrl, b.key), filename); err != nil {
 		return file.Media{}, err
 	}
 	var rawResp []byte = nil

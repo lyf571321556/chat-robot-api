@@ -11,7 +11,7 @@ import "github.com/lyf571321556/qiye-wechat-bot-api/bot"
 var botKey = "8c8c33c5-2ce2-4fae-b610-be137741a06d"
 var phoneNumber = ""
 var userid = "WuXingJuan"
-var wechatbot api.QiyeWechatBot
+var wechatbot api.Robot
 
 func setup() {
 	wechatbot = bot.NewQiyeWechatBot(botKey)
