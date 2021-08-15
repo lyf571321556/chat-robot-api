@@ -23,13 +23,15 @@ var (
 )
 
 type FeishuRobot struct {
+	Name    string
 	webhook string
 	key     string
 }
 
-func NewFeishuRobot(key string) *FeishuRobot {
+func NewFeishuRobot(name string, key string) *FeishuRobot {
 	bot := new(FeishuRobot)
 	bot.webhook = fmt.Sprintf(QiyeWeinxingGroupRobotSendurl, key)
+	bot.Name = name
 	bot.key = key
 	return bot
 }
