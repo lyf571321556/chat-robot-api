@@ -1,4 +1,4 @@
-package bot
+package robot
 
 import (
 	"encoding/json"
@@ -14,45 +14,53 @@ import (
 	"net/http"
 )
 
-type QiyeWechatBot struct {
+var (
+	// GroupBotSendUrl 企业微信群机器人 webhook
+	QiyeWeinxingGroupRobotSendurl = "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=%s"
+	QiyeWeixingAppRobotSendURL    = "https://qyapi.weixin.qq.com/cgi-bin/message/send"
+	// UploadMediaUrl 企业微信上传文件接口 `url`, `type` 固定传 `file`
+	QiyeWeinxingUploadMediaUrl = "https://qyapi.weixin.qq.com/cgi-bin/webhook/upload_media?key=%s&type=file"
+)
+
+type QiyeWechatRobot struct {
 	webhook string
 	key     string
 }
 
-func NewQiyeWechatBot(key string) *QiyeWechatBot {
-	bot := new(QiyeWechatBot)
-	bot.webhook = fmt.Sprintf(api.GroupBotSendUrl, key)
+func NewQiyeWechatRobot(key string) *QiyeWechatRobot {
+	bot := new(QiyeWechatRobot)
+	bot.webhook = fmt.Sprintf(QiyeWeinxingGroupRobotSendurl, key)
 
 	bot.key = key
 	return bot
 }
 
-func (b *QiyeWechatBot) PushTextMessage(content string, opts ...text.TextMsgOption) (err error) {
+func (b *QiyeWechatRobot) PushTextMessage(content string, opts ...text.TextMsgOption) (err error) {
 	msg := text.NewTextMsg(content, opts...)
 	return b.pushMsg(msg)
 }
 
-func (b *QiyeWechatBot) PushMarkdownMessage(content string) (err error) {
+func (b *QiyeWechatRobot) PushMarkdownMessage(content string) (err error) {
 	msg := markdown.NewMarkdownMsg(content)
 	return b.pushMsg(msg)
 }
 
-func (b *QiyeWechatBot) PushImageMessage(img []byte) (err error) {
+func (b *QiyeWechatRobot) PushImageMessage(img []byte) (err error) {
 	msg := image.NewImageMsg(img)
 	return b.pushMsg(msg)
 }
 
-func (b *QiyeWechatBot) PushNewsMessage(art news.Article, articles ...news.Article) (err error) {
+func (b *QiyeWechatRobot) PushNewsMessage(art news.Article, articles ...news.Article) (err error) {
 	msg := news.NewNewsMsg(art, articles...)
 	return b.pushMsg(msg)
 }
 
-func (b *QiyeWechatBot) PushFileMessage(media file.Media) error {
+func (b *QiyeWechatRobot) PushFileMessage(media file.Media) error {
 	msg := file.NewFileMsg(media.Id)
 	return b.pushMsg(msg)
 }
 
-func handleResp(resp *http.Response) (err error) {
+func handleQiyeWeixinResp(resp *http.Response) (err error) {
 	var reply = new(struct {
 		ErrCode int    `json:"errcode"`
 		ErrMsg  string `json:"errmsg"`
@@ -72,7 +80,7 @@ func handleResp(resp *http.Response) (err error) {
 	return nil
 }
 
-func (b *QiyeWechatBot) pushMsg(msg interface{}) (err error) {
+func (b *QiyeWechatRobot) pushMsg(msg interface{}) (err error) {
 	var bsJSON []byte
 	if bsJSON, err = json.Marshal(msg); err != nil {
 		return err
@@ -82,7 +90,7 @@ func (b *QiyeWechatBot) pushMsg(msg interface{}) (err error) {
 		return err
 	}
 
-	rawResp, err := api.ExecuteHTTP(req, handleResp)
+	rawResp, err := api.ExecuteHTTP(req, handleQiyeWeixinResp)
 	if err != nil {
 		return err
 	}
@@ -102,13 +110,13 @@ func (b *QiyeWechatBot) pushMsg(msg interface{}) (err error) {
 	return
 }
 
-func (b *QiyeWechatBot) UploadFile(filename string) (media file.Media, err error) {
+func (b *QiyeWechatRobot) UploadFile(filename string) (media file.Media, err error) {
 	var req *http.Request
-	if req, err = api.NewUploadRequest(http.MethodPost, fmt.Sprintf(api.UploadMediaUrl, b.key), filename); err != nil {
+	if req, err = api.NewUploadRequest(http.MethodPost, fmt.Sprintf(QiyeWeinxingUploadMediaUrl, b.key), filename); err != nil {
 		return file.Media{}, err
 	}
 	var rawResp []byte = nil
-	if rawResp, err = api.ExecuteHTTP(req, handleResp); err != nil {
+	if rawResp, err = api.ExecuteHTTP(req, handleQiyeWeixinResp); err != nil {
 		return file.Media{}, err
 	}
 

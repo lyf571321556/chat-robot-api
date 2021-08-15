@@ -20,15 +20,7 @@ import (
 
 var HTTPClient = http.DefaultClient
 
-// GroupBotSendUrl 企业微信群机器人 webhook
-var GroupBotSendUrl = "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=%s"
-
-var AppBotSendUrl = "https://qyapi.weixin.qq.com/cgi-bin/message/send"
-
-// UploadMediaUrl 企业微信上传文件接口 `url`, `type` 固定传 `file`
-var UploadMediaUrl = "https://qyapi.weixin.qq.com/cgi-bin/webhook/upload_media?key=%s&type=file"
-
-type QiyeWechatBot interface {
+type Robot interface {
 	PushTextMessage(content string, opts ...text.TextMsgOption) error
 	PushMarkdownMessage(content string) error
 	PushImageMessage(img []byte) error
@@ -43,7 +35,6 @@ func NewRequest(method string, rawUrl string, rawBody []byte) (request *http.Req
 		return nil, err
 	}
 	request.Header.Set("Content-Type", "application/json;charset=UTF-8")
-
 	return
 }
 
