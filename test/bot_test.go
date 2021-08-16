@@ -1,12 +1,12 @@
 package test
 
 import (
-	"github.com/lyf571321556/qiye-wechat-bot-api/api"
-	"github.com/lyf571321556/qiye-wechat-bot-api/markdown"
-	"github.com/lyf571321556/qiye-wechat-bot-api/text"
+	"github.com/lyf571321556/chat-robot-api/api"
+	"github.com/lyf571321556/chat-robot-api/markdown"
+	"github.com/lyf571321556/chat-robot-api/text"
 	"testing"
 )
-import "github.com/lyf571321556/qiye-wechat-bot-api/robot"
+import "github.com/lyf571321556/chat-robot-api/robot"
 
 var botKey = "8c8c33c5-2ce2-4fae-b610-be137741a06d"
 var phoneNumber = ""
@@ -14,7 +14,7 @@ var userid = "WuXingJuan"
 var wechatbot api.Robot
 
 func setup() {
-	wechatbot = robot.NewQiyeWechatRobot(botKey)
+	wechatbot = robot.NewQiyeWechatRobot("", botKey)
 	api.SetDebug(true)
 }
 

@@ -3,9 +3,9 @@ package api
 import (
 	"bytes"
 	"fmt"
-	"github.com/lyf571321556/qiye-wechat-bot-api/file"
-	"github.com/lyf571321556/qiye-wechat-bot-api/news"
-	"github.com/lyf571321556/qiye-wechat-bot-api/text"
+	"github.com/lyf571321556/chat-robot-api/file"
+	"github.com/lyf571321556/chat-robot-api/news"
+	"github.com/lyf571321556/chat-robot-api/text"
 	"io"
 	"io/ioutil"
 	"log"
