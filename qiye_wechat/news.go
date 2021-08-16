@@ -1,4 +1,4 @@
-package news
+package qiye_wechat
 
 type newsMsg struct {
 	// 消息类型, 固定为 `news`

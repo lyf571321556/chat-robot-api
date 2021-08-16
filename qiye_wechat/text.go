@@ -1,4 +1,4 @@
-package text
+package qiye_wechat
 
 type TextMsg struct {
 	// 消息类型, 固定为 `text`

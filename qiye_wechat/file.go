@@ -1,4 +1,4 @@
-package file
+package qiye_wechat
 
 type fileMsg struct {
 	// 消息类型, 固定为 `file`

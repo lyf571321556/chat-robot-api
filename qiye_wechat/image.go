@@ -1,4 +1,4 @@
-package image
+package qiye_wechat
 
 import (
 	"crypto/md5"

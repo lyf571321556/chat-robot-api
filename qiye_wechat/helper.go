@@ -1,4 +1,4 @@
-package markdown
+package qiye_wechat
 
 import (
 	"fmt"
@@ -43,6 +43,6 @@ func WarningText(s string) string {
 	return fmt.Sprintf(`<font color="warning">%s</font>`, s)
 }
 
-func MentionByUserid(userid string) string {
-	return fmt.Sprintf(`<@%s>`, userid)
-}
+//func MentionByUserid(userid string) string {
+//	return fmt.Sprintf(`<@%s>`, userid)
+//}

@@ -3,9 +3,7 @@ package api
 import (
 	"bytes"
 	"fmt"
-	"github.com/lyf571321556/chat-robot-api/file"
-	"github.com/lyf571321556/chat-robot-api/news"
-	"github.com/lyf571321556/chat-robot-api/text"
+	"github.com/lyf571321556/chat-robot-api/qiye_wechat"
 	"io"
 	"io/ioutil"
 	"log"
@@ -21,12 +19,12 @@ import (
 var HTTPClient = http.DefaultClient
 
 type Robot interface {
-	PushTextMessage(content string, opts ...text.TextMsgOption) error
+	PushTextMessage(content string, opts ...qiye_wechat.TextMsgOption) error
 	PushMarkdownMessage(content string) error
 	PushImageMessage(img []byte) error
-	PushNewsMessage(art news.Article, articles ...news.Article) error
-	PushFileMessage(media file.Media) error
-	UploadFile(filename string) (media file.Media, err error)
+	PushNewsMessage(art qiye_wechat.Article, articles ...qiye_wechat.Article) error
+	PushFileMessage(media qiye_wechat.Media) error
+	UploadFile(filename string) (media qiye_wechat.Media, err error)
 }
 
 func NewRequest(method string, rawUrl string, rawBody []byte) (request *http.Request, err error) {

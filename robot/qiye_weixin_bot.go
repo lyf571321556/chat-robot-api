@@ -4,11 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/lyf571321556/chat-robot-api/api"
-	"github.com/lyf571321556/chat-robot-api/file"
-	"github.com/lyf571321556/chat-robot-api/image"
-	"github.com/lyf571321556/chat-robot-api/markdown"
-	"github.com/lyf571321556/chat-robot-api/news"
-	"github.com/lyf571321556/chat-robot-api/text"
+	"github.com/lyf571321556/chat-robot-api/qiye_wechat"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -36,28 +32,28 @@ func NewQiyeWechatRobot(name string, key string) *QiyeWechatRobot {
 	return bot
 }
 
-func (b *QiyeWechatRobot) PushTextMessage(content string, opts ...text.TextMsgOption) (err error) {
-	msg := text.NewTextMsg(content, opts...)
+func (b *QiyeWechatRobot) PushTextMessage(content string, opts ...qiye_wechat.TextMsgOption) (err error) {
+	msg := qiye_wechat.NewTextMsg(content, opts...)
 	return b.pushMsg(msg)
 }
 
 func (b *QiyeWechatRobot) PushMarkdownMessage(content string) (err error) {
-	msg := markdown.NewMarkdownMsg(content)
+	msg := qiye_wechat.NewMarkdownMsg(content)
 	return b.pushMsg(msg)
 }
 
 func (b *QiyeWechatRobot) PushImageMessage(img []byte) (err error) {
-	msg := image.NewImageMsg(img)
+	msg := qiye_wechat.NewImageMsg(img)
 	return b.pushMsg(msg)
 }
 
-func (b *QiyeWechatRobot) PushNewsMessage(art news.Article, articles ...news.Article) (err error) {
-	msg := news.NewNewsMsg(art, articles...)
+func (b *QiyeWechatRobot) PushNewsMessage(art qiye_wechat.Article, articles ...qiye_wechat.Article) (err error) {
+	msg := qiye_wechat.NewNewsMsg(art, articles...)
 	return b.pushMsg(msg)
 }
 
-func (b *QiyeWechatRobot) PushFileMessage(media file.Media) error {
-	msg := file.NewFileMsg(media.Id)
+func (b *QiyeWechatRobot) PushFileMessage(media qiye_wechat.Media) error {
+	msg := qiye_wechat.NewFileMsg(media.Id)
 	return b.pushMsg(msg)
 }
 
@@ -111,14 +107,14 @@ func (b *QiyeWechatRobot) pushMsg(msg interface{}) (err error) {
 	return
 }
 
-func (b *QiyeWechatRobot) UploadFile(filename string) (media file.Media, err error) {
+func (b *QiyeWechatRobot) UploadFile(filename string) (media qiye_wechat.Media, err error) {
 	var req *http.Request
 	if req, err = api.NewUploadRequest(http.MethodPost, fmt.Sprintf(QiyeWeinxingUploadMediaUrl, b.key), filename); err != nil {
-		return file.Media{}, err
+		return qiye_wechat.Media{}, err
 	}
 	var rawResp []byte = nil
 	if rawResp, err = api.ExecuteHTTP(req, handleQiyeWeixinResp); err != nil {
-		return file.Media{}, err
+		return qiye_wechat.Media{}, err
 	}
 
 	var reply = new(struct {
@@ -129,8 +125,8 @@ func (b *QiyeWechatRobot) UploadFile(filename string) (media file.Media, err err
 		CreatedAt string `json:"created_at"`
 	})
 	if err = json.Unmarshal(rawResp, reply); err != nil {
-		return file.Media{}, fmt.Errorf("unknown response: %w\nraw response: %s", err, rawResp)
+		return qiye_wechat.Media{}, fmt.Errorf("unknown response: %w\nraw response: %s", err, rawResp)
 	}
-	media = file.Media{Id: reply.MediaId}
+	media = qiye_wechat.Media{Id: reply.MediaId}
 	return
 }
