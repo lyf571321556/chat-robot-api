@@ -26,7 +26,7 @@ type FeishuRobot struct {
 
 func NewFeishuRobot(name string, key string) *FeishuRobot {
 	bot := new(FeishuRobot)
-	bot.webhook = fmt.Sprintf(QiyeWeinxingGroupRobotSendurl, key)
+	bot.webhook = fmt.Sprintf(FeishuGroupRobotSendurl, key)
 	bot.Name = name
 	bot.key = key
 	return bot
@@ -109,7 +109,7 @@ func (b *FeishuRobot) pushMsg(msg interface{}) (err error) {
 
 func (b *FeishuRobot) UploadFile(filename string) (media qiye_wechat.Media, err error) {
 	var req *http.Request
-	if req, err = api.NewUploadRequest(http.MethodPost, fmt.Sprintf(QiyeWeinxingUploadMediaUrl, b.key), filename); err != nil {
+	if req, err = api.NewUploadRequest(http.MethodPost, fmt.Sprintf(FeishuUploadMediaUrl, b.key), filename); err != nil {
 		return qiye_wechat.Media{}, err
 	}
 	var rawResp []byte = nil
