@@ -2,8 +2,8 @@ package api
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
-	"github.com/lyf571321556/chat-robot-api/qiye_wechat"
 	"io"
 	"io/ioutil"
 	"log"
@@ -18,13 +18,72 @@ import (
 
 var HTTPClient = http.DefaultClient
 
-type Robot interface {
-	PushTextMessage(content string, opts ...qiye_wechat.TextMsgOption) error
-	PushMarkdownMessage(content string) error
-	PushImageMessage(img []byte) error
-	PushNewsMessage(art qiye_wechat.Article, articles ...qiye_wechat.Article) error
-	PushFileMessage(media qiye_wechat.Media) error
-	UploadFile(filename string) (media qiye_wechat.Media, err error)
+type MessageSentDelegate interface {
+	SendMessage(msg interface{}, handleResp HandRespFunc) (err error)
+	UploadFile(filePath string, handleResp HandRespFunc) (err error)
+	WebhookUrl() (webhookUrl string, err error)
+	UploadUrl() (uploadUrl string, err error)
+}
+
+type Robot struct {
+	MessageSentDelegate *MessageSentDelegate
+	//PushTextMessage(content string, opts ...qiye_wechat.TextMsgOption) error
+	//PushMarkdownMessage(content string) error
+	//PushImageMessage(img []byte) error
+	//PushNewsMessage(art qiye_wechat.Article, articles ...qiye_wechat.Article) error
+	//PushFileMessage(media qiye_wechat.Media) error
+	//UploadFile(filename string) (media qiye_wechat.Media, err error)
+}
+
+func (r *Robot) SendMessage(msg interface{}, handleResp HandRespFunc) (err error) {
+	var bsJSON []byte
+	if bsJSON, err = json.Marshal(msg); err != nil {
+		return err
+	}
+	var req *http.Request
+	var webhookUrl string
+	if webhookUrl, err = r.WebhookUrl(); err != nil {
+		return err
+	}
+	if req, err = NewRequest(http.MethodPost, webhookUrl, bsJSON); err != nil {
+		return err
+	}
+
+	rawResp, err := ExecuteHTTP(req, handleResp)
+	if err != nil {
+		return err
+	}
+	if rawResp != nil {
+		log.Printf("result:%s", string(rawResp))
+	}
+	return
+}
+
+func (r *Robot) UploadFile(filePath string, handleResp HandRespFunc) (err error) {
+	var req *http.Request
+	var uploadUrl string
+	if uploadUrl, err = r.UploadUrl(); err != nil {
+		return err
+	}
+	if req, err = NewUploadRequest(http.MethodPost, uploadUrl, filePath); err != nil {
+		return err
+	}
+	rawResp, err := ExecuteHTTP(req, handleResp)
+	if err != nil {
+		return err
+	}
+	if rawResp != nil {
+		log.Printf("result:%s", string(rawResp))
+	}
+	return
+}
+
+func (r *Robot) WebhookUrl() (webhookUrl string, err error) {
+	panic("must implement method WebhookUrl()")
+}
+
+func (r *Robot) UploadUrl() (uploadUrl string, err error) {
+	panic("must implement method UploadUrl()")
 }
 
 func NewRequest(method string, rawUrl string, rawBody []byte) (request *http.Request, err error) {

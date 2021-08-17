@@ -22,6 +22,7 @@ type QiyeWechatRobot struct {
 	Name    string
 	webhook string
 	key     string
+	*api.Robot
 }
 
 func NewQiyeWechatRobot(name string, key string) *QiyeWechatRobot {
